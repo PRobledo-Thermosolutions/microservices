@@ -10,13 +10,15 @@ from users.schemas import UserSchema
 from users.services import encrypt_password, verify_new_info
 # Dependencia de la base de datos
 from dependencies import db_dependency
+# Manager
+from websocket import manager
 
 # Crea el router del módulo de usuarios
 users_router = APIRouter()
 
 # Ruta: Crear un nuevo usuario (protegida)
 @users_router.post("/users", status_code=status.HTTP_201_CREATED, tags=["Users"])
-def create_user(
+async def create_user(
     user: UserSchema, 
     db: db_dependency, 
     current_user: str = Depends(get_current_user)
@@ -40,6 +42,11 @@ def create_user(
     db_user = UserModel.User(**user.dict())
     db.add(db_user)
     db.commit()
+
+    # Envía notificación a todos los clientes conectados vía WebSocket
+    await manager.broadcast(f"Nuevo usuario creado: {db_user.username}")
+
+    return {"message": "Usuario creado exitosamente"}
 
 # Ruta: Obtener un usuario por ID (protegida)
 @users_router.get("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
