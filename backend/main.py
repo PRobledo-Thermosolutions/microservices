@@ -52,12 +52,17 @@ def create_user(user: UserModel, db: db_dependency):
     db.commit()
     
 @app.get("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
-async def read_user(user_id: int, db: db_dependency):
+async def read_user_by_id(user_id: int, db: db_dependency):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user:
         return user
     else:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+@app.get("/users", status_code=status.HTTP_200_OK, tags=["Users"])
+async def read_users(db: db_dependency):
+    users = db.query(models.User).all()
+    return users
 
 @app.put("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
 def update_user(user_id: int, updated_user: UserModel, db: db_dependency):
