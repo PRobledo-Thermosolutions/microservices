@@ -23,7 +23,7 @@ def create_database_if_not_exists():
     )
     try:
         with connection.cursor() as cursor:
-            cursor.execute("CREATE DATABASE IF NOT EXISTS microservices CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
         connection.commit()
     finally:
         connection.close()
