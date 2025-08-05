@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from auth.services import get_current_user
 import users.models as UserModel
 from users.schemas import UserSchema
 from users.services import encrypt_password, verify_new_info
@@ -7,7 +8,7 @@ from dependencies import db_dependency
 users_router = APIRouter()
 
 @users_router.post("/users", status_code=status.HTTP_201_CREATED, tags=["Users"])
-def create_user(user: UserSchema, db: db_dependency):
+def create_user(user: UserSchema, db: db_dependency, current_user: str = Depends(get_current_user)):
     hashed_password = encrypt_password(user.password)
     user.password = hashed_password
     db_user = UserModel.User(**user.dict())
@@ -15,7 +16,7 @@ def create_user(user: UserSchema, db: db_dependency):
     db.commit()
     
 @users_router.get("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
-async def read_user_by_id(user_id: int, db: db_dependency):
+async def read_user_by_id(user_id: int, db: db_dependency, current_user: str = Depends(get_current_user)):
     user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
     if user:
         return user
@@ -23,12 +24,12 @@ async def read_user_by_id(user_id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
 @users_router.get("/users", status_code=status.HTTP_200_OK, tags=["Users"])
-async def read_users(db: db_dependency):
+async def read_users(db: db_dependency, current_user: str = Depends(get_current_user)):
     users = db.query(UserModel.User).all()
     return users
 
 @users_router.put("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
-def update_user(user_id: int, updated_user: UserSchema, db: db_dependency):
+def update_user(user_id: int, updated_user: UserSchema, db: db_dependency, current_user: str = Depends(get_current_user)):
     user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -40,7 +41,7 @@ def update_user(user_id: int, updated_user: UserSchema, db: db_dependency):
     return user
 
 @users_router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
-def delete_user(user_id: int, db: db_dependency):
+def delete_user(user_id: int, db: db_dependency, current_user: str = Depends(get_current_user)):
     user = db.query(UserModel.User).filter(UserModel.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
