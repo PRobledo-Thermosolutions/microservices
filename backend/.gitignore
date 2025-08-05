@@ -2,3 +2,4 @@
 /__pycache__
 /auth/__pycache__
 /users/__pycache__
+/websocket/__pycache__
