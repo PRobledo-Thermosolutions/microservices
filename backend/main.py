@@ -10,6 +10,9 @@ import bcrypt
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
 
+app.title = "Microservices API FastAPI"
+app.version = "0.0.1"
+
 class UserModel(BaseModel):
     email: str = None
     username: str = None
@@ -40,7 +43,7 @@ def verify_new_info(user: UserModel, updated_user: UserModel):
         
 db_dependency = Annotated[Session, Depends(get_db)]
 
-@app.post("/users", status_code=status.HTTP_201_CREATED)
+@app.post("/users", status_code=status.HTTP_201_CREATED, tags=["Users"])
 def create_user(user: UserModel, db: db_dependency):
     hashed_password = encrypt_password(user.password)
     user.password = hashed_password
@@ -48,7 +51,7 @@ def create_user(user: UserModel, db: db_dependency):
     db.add(db_user)
     db.commit()
     
-@app.get("/users/{user_id}", status_code=status.HTTP_200_OK)
+@app.get("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
 async def read_user(user_id: int, db: db_dependency):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user:
@@ -56,7 +59,7 @@ async def read_user(user_id: int, db: db_dependency):
     else:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-@app.put("/users/{user_id}", status_code=status.HTTP_200_OK)
+@app.put("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
 def update_user(user_id: int, updated_user: UserModel, db: db_dependency):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
@@ -68,7 +71,7 @@ def update_user(user_id: int, updated_user: UserModel, db: db_dependency):
     db.refresh(user)
     return user
 
-@app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
 def delete_user(user_id: int, db: db_dependency):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
@@ -78,7 +81,7 @@ def delete_user(user_id: int, db: db_dependency):
     db.commit()
     return
 
-@app.post("/login")
+@app.post("/login", tags=["Auth"])
 def login(login_req: LoginModel, db: db_dependency):
     user = db.query(models.User).filter(models.User.username == login_req.username).first()
 
