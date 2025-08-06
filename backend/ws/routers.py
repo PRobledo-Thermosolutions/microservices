@@ -1,5 +1,5 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from ws import manager  # Administrador de conexiones WebSocket
+from ws.manager import manager  # Administrador de conexiones WebSocket
 
 websocket_router = APIRouter()  # Crea un router para rutas WebSocket
 

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllUsers } from "../../services/user";
+import useWebSocket from "../../hooks/useWebSocket";
+import Path from "../../config";
 import "../../styles/user/UserList.css";
+import toast from 'react-hot-toast';
 
 const USERS_PER_PAGE = 10;
 
@@ -10,6 +13,16 @@ const UserList = () => {
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+
+    const { lastMessage } = useWebSocket(Path.WS_BASE_URL);
+
+    useEffect(() => {
+        if (lastMessage && lastMessage.event === 'user_created') {
+            setUsers(prev => [...prev, lastMessage.user]);
+            toast.success(`New user ${lastMessage.user.username} created!`);
+        }
+    }, [lastMessage]);
+
 
     const handleLogout = () => {
         try {

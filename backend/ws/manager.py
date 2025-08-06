@@ -11,7 +11,7 @@ class ConnectionManager:
         """
         Inicializa una instancia de ConnectionManager con una lista vacía de conexiones activas.
         """
-        self.active_connections: List[WebSocket] = []
+        self.active_connections = []
 
     async def connect(self, websocket: WebSocket):
         """

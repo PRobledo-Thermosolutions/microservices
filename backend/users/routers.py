@@ -1,4 +1,5 @@
 # Herramientas de FastAPI para rutas, dependencias e interceptar errores
+import json
 from fastapi import APIRouter, Depends, HTTPException, status
 # Función que valida el token JWT y obtiene al usuario actual
 from auth.services import get_current_user
@@ -44,7 +45,14 @@ async def create_user(
     db.commit()
 
     # Envía notificación a todos los clientes conectados vía WebSocket
-    await manager.broadcast(f"Nuevo usuario creado: {db_user.username}")
+    await manager.broadcast(json.dumps({
+        "event": "user_created",
+        "user": {
+            "id": db_user.id,
+            "email": db_user.email,
+            "username": db_user.username,
+        }
+    }))
 
     return {"message": "Usuario creado exitosamente"}
 
