@@ -59,7 +59,6 @@ const handleResponse = async (response) => {
  */
 export const createUser = async (formData) => {
   try {
-    console.log('Enviando petición para crear usuario:', { ...formData, password: '[HIDDEN]' });
     
     const response = await fetch(`${Path.API_BASE_URL}/users`, {
       method: "POST",
@@ -70,7 +69,6 @@ export const createUser = async (formData) => {
     await handleResponse(response);
     const data = await response.json();
     
-    console.log('Usuario creado exitosamente:', data);
     return data;
     
   } catch (error) {
@@ -86,7 +84,6 @@ export const createUser = async (formData) => {
  */
 export const getUsers = async () => {
   try {
-    console.log('Obteniendo lista de usuarios...');
     
     const response = await fetch(`${Path.API_BASE_URL}/users`, {
       method: "GET",
@@ -95,8 +92,6 @@ export const getUsers = async () => {
 
     await handleResponse(response);
     const data = await response.json();
-    
-    console.log(`Se obtuvieron ${data.length} usuarios`);
     return data;
     
   } catch (error) {
@@ -113,7 +108,6 @@ export const getUsers = async () => {
  */
 export const getUserById = async (userId) => {
   try {
-    console.log(`Obteniendo usuario con ID: ${userId}`);
     
     const response = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
       method: "GET",
@@ -123,7 +117,6 @@ export const getUserById = async (userId) => {
     await handleResponse(response);
     const data = await response.json();
     
-    console.log('Usuario obtenido:', data);
     return data;
     
   } catch (error) {
@@ -141,7 +134,6 @@ export const getUserById = async (userId) => {
  */
 export const updateUser = async (userId, updateData) => {
   try {
-    console.log(`Actualizando usuario ${userId}:`, updateData);
     
     const response = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
       method: "PUT",
@@ -152,7 +144,6 @@ export const updateUser = async (userId, updateData) => {
     await handleResponse(response);
     const data = await response.json();
     
-    console.log('Usuario actualizado exitosamente:', data);
     return data;
     
   } catch (error) {
@@ -169,7 +160,6 @@ export const updateUser = async (userId, updateData) => {
  */
 export const deleteUser = async (userId) => {
   try {
-    console.log(`Eliminando usuario con ID: ${userId}`);
     
     const response = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
       method: "DELETE",
@@ -186,7 +176,6 @@ export const deleteUser = async (userId) => {
       // No problem si no hay contenido JSON
     }
     
-    console.log('Usuario eliminado exitosamente');
     return data;
     
   } catch (error) {
@@ -209,7 +198,6 @@ export const checkApiHealth = async () => {
     await handleResponse(response);
     const data = await response.json();
     
-    console.log('Estado de la API:', data);
     return data;
     
   } catch (error) {
