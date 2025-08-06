@@ -3,16 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { createUser } from "../../services/user";
 import "../../styles/user/CreateUser.css";
 
+/**
+ * Componente para crear un nuevo usuario.
+ * Contiene un formulario controlado para ingresar email, username y contraseña.
+ * Al enviarlo, llama al servicio para crear el usuario y navega a la lista.
+ */
 const CreateUser = () => {
     const navigate = useNavigate();
 
+    // Estado para manejar los datos del formulario
     const [formData, setFormData] = useState({
         email: "",
         username: "",
         password: "",
-        is_active: true,
+        is_active: true, // activo por defecto (aunque no se edita en formulario)
     });
 
+    /**
+     * Actualiza el estado del formulario cuando cambian los inputs.
+     * Soporta inputs tipo texto, email y checkbox (aunque no hay checkbox aquí).
+     */
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -21,6 +31,12 @@ const CreateUser = () => {
         }));
     };
 
+    /**
+     * Maneja el envío del formulario.
+     * Previene el envío por defecto, intenta crear el usuario con los datos.
+     * Si es exitoso, muestra alerta y navega a la lista.
+     * Si falla, muestra alerta con el error.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -35,6 +51,7 @@ const CreateUser = () => {
     return (
         <div className="createuser-container">
             <form onSubmit={handleSubmit} className="createuser-form">
+                {/* Botón para volver a la lista de usuarios */}
                 <button
                     type="button"
                     onClick={() => navigate("/users")}
@@ -45,6 +62,7 @@ const CreateUser = () => {
 
                 <h2 className="createuser-title">Crear Usuario</h2>
 
+                {/* Campo email */}
                 <label className="form-label">Email</label>
                 <input
                     type="email"
@@ -55,6 +73,7 @@ const CreateUser = () => {
                     required
                 />
 
+                {/* Campo username */}
                 <label className="form-label">Username</label>
                 <input
                     type="text"
@@ -65,6 +84,7 @@ const CreateUser = () => {
                     required
                 />
 
+                {/* Campo contraseña */}
                 <label className="form-label">Contraseña</label>
                 <input
                     type="password"
@@ -75,6 +95,7 @@ const CreateUser = () => {
                     required
                 />
 
+                {/* Botón para enviar el formulario */}
                 <button type="submit" className="submit-button">
                     Crear
                 </button>
