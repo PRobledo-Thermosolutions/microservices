@@ -30,10 +30,10 @@ app.include_router(websocket_router)
 # Asigna explícitamente la dependencia de la base de datos (no es necesario si no se usa aquí)
 db_dependency = db_dependency
 
+# Configura el middleware CORS para permitir solicitudes desde origenes diferentes (en este caso, localhost:3000)
 origins = [
     "http://localhost:3000",
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
