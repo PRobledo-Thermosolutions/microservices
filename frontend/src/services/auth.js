@@ -1,4 +1,4 @@
-// Se importa la configuración donde se define la URL base de la API
+// Configuración donde se define la URL base de la API
 import Path from "../config";
 
 /**

@@ -1,16 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import useWebSocket from '../hooks/useWebSocket'; // Ajusta la ruta según tu estructura
+import useWebSocket from '../hooks/useWebSocket';
 
 /**
- * Context minimalista para manejar WebSocket sin modificar el diseño existente.
- * Solo proporciona la funcionalidad básica de conexión y eventos.
+ * Context para manejar WebSocket a nivel global de la aplicación.
+ * Permite que cualquier componente pueda escuchar eventos de WebSocket
+ * y recibir notificaciones en tiempo real.
  */
 const WebSocketContext = createContext(null);
 
 /**
- * Provider del contexto WebSocket - versión minimalista
+ * Provider del contexto WebSocket que envuelve la aplicación.
+ * Maneja la conexión WebSocket y distribuye los mensajes a los componentes suscritos.
  */
 export const WebSocketProvider = ({ children }) => {
+  const [notifications, setNotifications] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
   
   // Configuración del WebSocket
@@ -22,59 +25,148 @@ export const WebSocketProvider = ({ children }) => {
     reconnect,
     connectionState 
   } = useWebSocket('ws://localhost:8000/ws/users', {
-    debug: false, // Sin logs para no interferir
+    debug: true,
     reconnectInterval: 3000,
     maxReconnectAttempts: 5
   });
 
-  // Procesar mensajes entrantes sin mostrar notificaciones visuales
+  // Efecto para procesar mensajes entrantes del WebSocket
   useEffect(() => {
     if (lastMessage) {
-      // Solo procesar eventos de usuarios creados
-      if (lastMessage.event === 'user_created') {
-        const newUserEvent = {
-          ...lastMessage,
-          id: Date.now(),
-          timestamp: new Date().toISOString(),
-          processed: false
-        };
-        
-        setUserEvents(prev => [newUserEvent, ...prev]);
+      console.log('WebSocket message received:', lastMessage);
+      
+      // Procesar diferentes tipos de eventos
+      switch (lastMessage.event) {
+        case 'user_created':
+          // Evento de usuario creado
+          const newUserEvent = {
+            ...lastMessage,
+            id: Date.now(), // ID único para la notificación
+            timestamp: new Date().toISOString(),
+            read: false
+          };
+          
+          setUserEvents(prev => [newUserEvent, ...prev]);
+          
+          // Crear notificación para mostrar al usuario
+          setNotifications(prev => [...prev, {
+            id: newUserEvent.id,
+            type: 'success',
+            title: 'Nuevo Usuario Creado',
+            message: `Usuario ${lastMessage.user?.username || 'desconocido'} creado exitosamente`,
+            timestamp: newUserEvent.timestamp,
+            autoHide: true
+          }]);
+          break;
+          
+        case 'connection_established':
+          // Conexión establecida
+          setNotifications(prev => [...prev, {
+            id: Date.now(),
+            type: 'info',
+            title: 'Conectado',
+            message: 'Conexión WebSocket establecida correctamente',
+            timestamp: new Date().toISOString(),
+            autoHide: true
+          }]);
+          break;
+          
+        case 'error':
+          // Error del servidor
+          setNotifications(prev => [...prev, {
+            id: Date.now(),
+            type: 'error',
+            title: 'Error del Servidor',
+            message: lastMessage.message || 'Error desconocido',
+            timestamp: new Date().toISOString(),
+            autoHide: false
+          }]);
+          break;
+          
+        default:
+          // Otros eventos
+          console.log('Unhandled WebSocket event:', lastMessage.event);
       }
     }
   }, [lastMessage]);
 
-  // Función para marcar evento como procesado
-  const markEventAsProcessed = (eventId) => {
+  // Función para limpiar notificaciones automáticamente
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNotifications(prev => 
+        prev.filter(notification => {
+          if (notification.autoHide) {
+            const age = Date.now() - new Date(notification.timestamp).getTime();
+            return age < 5000; // 5 segundos
+          }
+          return true;
+        })
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Función para marcar notificación como leída
+  const markNotificationAsRead = (id) => {
+    setNotifications(prev => 
+      prev.filter(notification => notification.id !== id)
+    );
+  };
+
+  // Función para limpiar todas las notificaciones
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  // Función para marcar evento de usuario como leído
+  const markUserEventAsRead = (id) => {
     setUserEvents(prev => 
       prev.map(event => 
-        event.id === eventId ? { ...event, processed: true } : event
+        event.id === id ? { ...event, read: true } : event
       )
     );
   };
 
-  // Función para obtener eventos no procesados
-  const getUnprocessedEvents = () => {
-    return userEvents.filter(event => !event.processed);
+  // Función para obtener el estado de conexión legible
+  const getConnectionStatus = () => {
+    switch (readyState) {
+      case connectionState.CONNECTING:
+        return { text: 'Conectando...', color: 'orange', status: 'connecting' };
+      case connectionState.OPEN:
+        return { text: 'Conectado', color: 'green', status: 'connected' };
+      case connectionState.CLOSING:
+        return { text: 'Cerrando...', color: 'orange', status: 'closing' };
+      case connectionState.CLOSED:
+        return { text: 'Desconectado', color: 'red', status: 'disconnected' };
+      default:
+        return { text: 'Desconocido', color: 'gray', status: 'unknown' };
+    }
   };
 
-  // Valor mínimo del contexto
+  // Valor del contexto que se proporciona a los componentes hijos
   const contextValue = {
-    // Estado básico de conexión
-    isConnected: readyState === connectionState.OPEN,
+    // Estado de la conexión
+    connectionStatus: getConnectionStatus(),
     readyState,
     error,
     
-    // Funciones básicas
+    // Funciones de WebSocket
     sendMessage,
     reconnect,
     
+    // Notificaciones
+    notifications,
+    markNotificationAsRead,
+    clearAllNotifications,
+    
     // Eventos de usuarios
     userEvents,
-    unprocessedEvents: getUnprocessedEvents(),
-    markEventAsProcessed,
+    markUserEventAsRead,
+    unreadUserEvents: userEvents.filter(event => !event.read),
     
     // Utilidades
+    isConnected: readyState === connectionState.OPEN,
     connectionState
   };
 
@@ -86,7 +178,8 @@ export const WebSocketProvider = ({ children }) => {
 };
 
 /**
- * Hook para usar el contexto WebSocket
+ * Hook para usar el contexto WebSocket en componentes.
+ * Proporciona acceso a todas las funcionalidades del WebSocket.
  */
 export const useWebSocketContext = () => {
   const context = useContext(WebSocketContext);

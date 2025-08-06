@@ -1,7 +1,5 @@
-// Configuración de la API
-const Path = {
-  API_BASE_URL: 'http://localhost:8000' // Ajusta según tu configuración
-};
+// Configuración base de rutas de la API
+import Path from "../config";
 
 /**
  * Obtiene el token de autorización desde localStorage
