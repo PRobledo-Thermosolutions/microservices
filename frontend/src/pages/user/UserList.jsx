@@ -18,7 +18,7 @@ const UserList = () => {
 
     useEffect(() => {
         if (lastMessage && lastMessage.event === 'user_created') {
-            setUsers(prev => [...prev, lastMessage.user]);
+            setUsers(prev => [...(prev || []), lastMessage.user]);
             toast.success(`New user ${lastMessage.user.username} created!`);
         }
     }, [lastMessage]);
@@ -36,9 +36,10 @@ const UserList = () => {
     const fetchUsers = async () => {
         try {
             const data = await getAllUsers();
-            setUsers(data);
+            setUsers(data || []);
         } catch (error) {
             console.error("Error:", error);
+            setUsers([]);
             alert("No se pudieron cargar los usuarios.");
         }
     };
@@ -47,8 +48,10 @@ const UserList = () => {
         fetchUsers();
     }, []);
 
+    const s = search.toLowerCase();
     const filteredUsers = users.filter((user) => {
-        const s = search.toLowerCase();
+        if (!s) return true;
+
         return (
             user.id.toString().includes(s) ||
             user.email.toLowerCase().includes(s) ||
@@ -56,6 +59,7 @@ const UserList = () => {
             (user.is_active ? "activo" : "inactivo").includes(s)
         );
     });
+
 
     const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
     const paginatedUsers = filteredUsers.slice(
