@@ -1,70 +1,96 @@
-# Getting Started with Create React App
+# React User Management App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Esta es una aplicación frontend hecha con **React** que permite gestionar usuarios: login, listado con búsqueda y paginación, creación, edición, eliminación y actualización en tiempo real vía WebSocket.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Tecnologías y librerías usadas
 
-### `npm start`
+* React con Create React App
+* React Router DOM para navegación
+* Fetch API para comunicación con backend REST
+* WebSocket para eventos en tiempo real (usuarios creados)
+* react-hot-toast para notificaciones
+* CSS modularizado para estilos
+* Variables de entorno para configuración de URLs
+* LocalStorage para manejo simple de token JWT
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Características principales
 
-### `npm test`
+* **Login y autenticación** con token JWT guardado en localStorage
+* **Protección de rutas** con redirección si no hay token
+* **Listado de usuarios** con búsqueda por ID, email, username o estado
+* **Paginación** manual para manejar grandes listados
+* **WebSocket** para recibir notificaciones en tiempo real de nuevos usuarios creados
+* **CRUD de usuarios:** crear, ver detalle, actualizar y eliminar
+* **Navegación entre pantallas** usando React Router
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
+
+## Configuración
+
+### Variables de entorno
+
+Crear un archivo `.env` en la raíz con:
+
+```
+REACT_APP_PATH_TO_API=http://localhost:8000
+REACT_APP_WS_PATH_TO_API=ws://localhost:8000/ws
+```
+
+Ajusta las URLs según tu backend.
+
+---
+## Instalar dependencias
+En el directorio del proyecto frontend, ejecuta:
+
+### `npm install`
+
+## Scripts disponibles
+
+En el directorio del proyecto frontend, ejecuta:
+
+### `npm run start`
+
+Ejecuta la app en modo desarrollo.
+Abre [http://localhost:3000](http://localhost:3000) para verla.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Genera una versión optimizada para producción en la carpeta `build`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Estructura principal
 
-### `npm run eject`
+* `/src/pages/auth/Login.jsx`
+  Pantalla de login con formulario y manejo de token.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* `/src/pages/user/UserList.jsx`
+  Listado de usuarios con búsqueda, paginación y actualización en tiempo real.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+* `/src/pages/user/UserDetail.jsx`
+  Detalle y edición de un usuario seleccionado.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+* `/src/pages/user/CreateUser.jsx`
+  Formulario para crear un nuevo usuario.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* `/src/services/auth.js` y `/src/services/user.js`
+  Funciones para llamar al backend y realizar acciones de login y gestión de usuarios.
 
-## Learn More
+* `/src/hooks/useWebSocket.js`
+  Hook personalizado para conexión WebSocket y manejo de mensajes.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+* `/src/config.js`
+  Configuración centralizada para URLs base (API y WebSocket) cargadas desde `.env`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## Uso básico
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Iniciar backend y asegurarse que esté corriendo en la URL configurada.
+2. Ejecutar la app con `npm run start`.
+3. Ingresar con credenciales válidas en el login.
+4. Navegar y administrar usuarios desde la interfaz.
