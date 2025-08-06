@@ -1,9 +1,9 @@
-import API_BASE_URL from "../config";
+import Path from "../config";
 
 export const getAllUsers = async () => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/users`, {
+    const response = await fetch(`${Path.API_BASE_URL}/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -22,7 +22,7 @@ export const getAllUsers = async () => {
 export const getUserById = async (userId) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+    const res = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error("No se pudo obtener el usuario");
@@ -36,7 +36,7 @@ export const getUserById = async (userId) => {
 export const createUser = async (formData) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/users`, {
+    const response = await fetch(`${Path.API_BASE_URL}/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export const createUser = async (formData) => {
 export const updateUser = async (id, form) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+    const res = await fetch(`${Path.API_BASE_URL}/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export const updateUser = async (id, form) => {
 export const deleteUser = async (id) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+    const res = await fetch(`${Path.API_BASE_URL}/users/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

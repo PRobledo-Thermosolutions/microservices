@@ -1,6 +1,8 @@
+import Path from "../config";
+
 export const login = async (username, password) => {
   try {
-    const response = await fetch("http://localhost:8000/login", {
+    const response = await fetch(`${Path.API_BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
