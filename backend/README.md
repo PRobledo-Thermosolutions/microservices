@@ -7,6 +7,16 @@ Esta API proporciona endpoints para la gestión completa de usuarios, incluyendo
 http://localhost:8000
 ```
 
+## Instalar dependencias
+```
+pip install fastapi uvicorn
+```
+
+## Dentro del proyecto backend, iniciar la API
+```
+python -m uvicorn main:app --reload
+```
+
 ## Modelos de Datos
 
 ### UserModel
