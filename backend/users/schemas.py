@@ -10,5 +10,3 @@ class UserSchema(BaseModel):
     username: str
     # Campo password: cadena de texto
     password: str
-    # Campo is_active: booleano
-    is_active: bool

@@ -11,7 +11,7 @@ from users.services import encrypt_password, verify_new_info
 # Dependencia de la base de datos
 from dependencies import db_dependency
 # Manager
-from websocket import manager
+from ws.manager import manager
 
 # Crea el router del módulo de usuarios
 users_router = APIRouter()

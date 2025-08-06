@@ -8,7 +8,7 @@ import users.models as UserModel
 # Routers definidos para usuarios, autenticación y websockets
 from users.routers import users_router
 from auth.routers import auth_router
-from websocket.router import websocket_router
+from ws.routers import websocket_router
 # Dependencia para obtener la sesión de base de datos
 from dependencies import db_dependency
 
