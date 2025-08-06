@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUser } from "../../services/user";
+import "../../styles/CreateUser.css";
 
 const CreateUser = () => {
     const navigate = useNavigate();
@@ -22,10 +23,8 @@ const CreateUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             await createUser(formData);
-
             alert("Usuario creado exitosamente");
             navigate("/users");
         } catch (error) {
@@ -34,47 +33,49 @@ const CreateUser = () => {
     };
 
     return (
-        <div className="min-h-screen bg-blue-100 flex items-center justify-center">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white p-8 rounded shadow-md w-full max-w-md"
-            >
-                <h2 className="text-2xl font-bold text-center mb-6">Crear Usuario</h2>
+        <div className="createuser-container">
+            <form onSubmit={handleSubmit} className="createuser-form">
+                <button
+                    type="button"
+                    onClick={() => navigate("/users")}
+                    className="back-button"
+                >
+                    Volver a la lista
+                </button>
 
-                <label className="block mb-2 font-medium">Email</label>
+                <h2 className="createuser-title">Crear Usuario</h2>
+
+                <label className="form-label">Email</label>
                 <input
                     type="email"
                     name="email"
-                    className="w-full px-3 py-2 mb-4 border rounded"
+                    className="form-input"
                     value={formData.email}
                     onChange={handleChange}
                     required
                 />
 
-                <label className="block mb-2 font-medium">Username</label>
+                <label className="form-label">Username</label>
                 <input
                     type="text"
                     name="username"
-                    className="w-full px-3 py-2 mb-4 border rounded"
+                    className="form-input"
                     value={formData.username}
                     onChange={handleChange}
                     required
                 />
 
-                <label className="block mb-2 font-medium">Contraseña</label>
+                <label className="form-label">Contraseña</label>
                 <input
                     type="password"
                     name="password"
-                    className="w-full px-3 py-2 mb-4 border rounded"
+                    className="form-input"
                     value={formData.password}
                     onChange={handleChange}
                     required
                 />
 
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                >
+                <button type="submit" className="submit-button">
                     Crear
                 </button>
             </form>

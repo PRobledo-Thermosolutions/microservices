@@ -1,0 +1,131 @@
+.userlist-container {
+  min-height: 100vh;
+  background-color: #0b2a33;
+  padding: 2rem;
+  color: #f9fafb;
+  font-family: sans-serif;
+}
+
+.userlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.userlist-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.logout-button {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.logout-button:hover {
+  background-color: #dc2626;
+}
+
+.userlist-search {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 97%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.userlist-table-wrapper {
+  overflow-x: auto;
+  background-color: rgba(255, 255, 255, 0);
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  color: #111827;
+}
+
+.userlist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.userlist-table thead {
+  background-color: #06b6d4;
+  color: white;
+}
+
+.userlist-table th,
+.userlist-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.userlist-table tbody tr {
+  background-color: #f0f9ff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.userlist-table tbody tr:hover {
+  background-color: #bae6fd;
+}
+
+.no-users {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280;
+}
+
+.pagination {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.page-button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #06b6d4;
+  background-color: white;
+  color: #06b6d4;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.page-button:hover {
+  background-color: #e0f2fe;
+}
+
+.page-button.active {
+  background-color: #06b6d4;
+  color: white;
+  font-weight: bold;
+}
+
+.create-user-button {
+  margin-top: 1.5rem;
+  background-color: #0e7490;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.create-user-button:hover {
+  background-color: #155e75;
+}

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getUserById, updateUser, deleteUser } from "../../services/user";
+import "../../styles/UserDetail.css";
 
 const UserDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [user, setUser] = useState(null);
-  const [form, setForm] = useState({ email: "", username: "", password: "", is_active: true });
+  const [form, setForm] = useState({
+    email: "",
+    username: "",
+    password: "",
+    is_active: true,
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -18,7 +24,6 @@ const UserDetail = () => {
         alert(err.message);
       }
     };
-
     fetchUser();
   }, [id]);
 
@@ -32,7 +37,7 @@ const UserDetail = () => {
 
   const handleUpdate = async () => {
     try {
-      updateUser(id, form);
+      await updateUser(id, form);
       alert("Usuario actualizado correctamente");
     } catch (err) {
       alert(err.message);
@@ -49,53 +54,58 @@ const UserDetail = () => {
     }
   };
 
-  if (!user) return <div className="p-8">Cargando...</div>;
+  if (!user) return <div className="detail-loading">Cargando...</div>;
 
   return (
-    <div className="min-h-screen bg-blue-100 p-8">
-      <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-bold mb-4 text-blue-900">Editar Usuario</h2>
-        <label className="block mb-2">
-          Email:
+    <div className="detail-container">
+      <div className="detail-card">
+        <button
+          type="button"
+          onClick={() => navigate("/users")}
+          className="back-button"
+        >
+          Volver a la lista
+        </button>
+
+        <h2 className="detail-title">Editar Usuario</h2>
+
+        <label className="form-label">
+          Email
           <input
             name="email"
             value={form.email}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border rounded"
+            className="form-input"
           />
         </label>
-        <label className="block mb-2">
-          Username:
+
+        <label className="form-label">
+          Username
           <input
             name="username"
             value={form.username}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border rounded"
-          />
-        </label>
-        <label className="block mb-2">
-          Contraseña:
-          <input
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            placeholder="(dejar en blanco para no cambiar)"
-            className="w-full mt-1 p-2 border rounded"
+            className="form-input"
           />
         </label>
 
-        <div className="flex justify-between">
-          <button
-            onClick={handleUpdate}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
+        <label className="form-label">
+          Contraseña
+          <input
+            name="password"
+            type="password"
+            placeholder="(dejar en blanco para no cambiar)"
+            value={form.password}
+            onChange={handleChange}
+            className="form-input"
+          />
+        </label>
+
+        <div className="button-group">
+          <button onClick={handleUpdate} className="btn-primary">
             Guardar cambios
           </button>
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
+          <button onClick={handleDelete} className="btn-danger">
             Eliminar usuario
           </button>
         </div>
