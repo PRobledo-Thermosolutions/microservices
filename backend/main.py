@@ -22,6 +22,20 @@ UserModel.Base.metadata.create_all(bind=engine)
 app.title = "Microservices API FastAPI"
 app.version = "0.0.1"
 
+# CONFIGURACIÓN CORS MEJORADA - Incluye configuración específica para WebSockets
+origins = [
+    "http://localhost:3000",
+    "ws://localhost:3000",  # Agregar protocolo WebSocket
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Registra el router del módulo de usuarios y de autenticación con la aplicación principal
 app.include_router(users_router)
 app.include_router(auth_router)
@@ -30,14 +44,7 @@ app.include_router(websocket_router)
 # Asigna explícitamente la dependencia de la base de datos (no es necesario si no se usa aquí)
 db_dependency = db_dependency
 
-# Configura el middleware CORS para permitir solicitudes desde origenes diferentes (en este caso, localhost:3000)
-origins = [
-    "http://localhost:3000",
-]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Endpoint de salud para verificar que la API esté funcionando
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
