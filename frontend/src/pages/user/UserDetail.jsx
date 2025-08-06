@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getUserById, updateUser, deleteUser } from "../../services/user";
-import "../../styles/UserDetail.css";
+import "../../styles/user/UserDetail.css";
 
 const UserDetail = () => {
   const navigate = useNavigate();

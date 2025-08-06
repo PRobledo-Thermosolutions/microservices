@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllUsers } from "../../services/user";
-import "../../styles/UserList.css";
+import "../../styles/user/UserList.css";
 
 const USERS_PER_PAGE = 10;
 
