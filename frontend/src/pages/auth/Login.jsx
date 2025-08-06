@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/auth";
+import { login } from "../../services/auth";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -12,7 +12,7 @@ const Login = () => {
     try {
       const token = await login(username, password);
       localStorage.setItem("token", token);
-      navigate("/welcome");
+      navigate("/users");
     } catch (err) {
       alert("Credenciales inválidas");
     }

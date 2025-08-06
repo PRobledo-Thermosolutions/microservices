@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createUser } from "../services/user";
+import { createUser } from "../../services/user";
 
 const CreateUser = () => {
     const navigate = useNavigate();
@@ -27,7 +27,7 @@ const CreateUser = () => {
             await createUser(formData);
 
             alert("Usuario creado exitosamente");
-            navigate("/welcome");
+            navigate("/users");
         } catch (error) {
             alert("Error: " + error.message);
         }

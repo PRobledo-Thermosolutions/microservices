@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllUsers } from "../services/user";
+import { getAllUsers } from "../../services/user";
 
 const USERS_PER_PAGE = 10;
 
-const Welcome = () => {
+const UserList = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState("");
@@ -136,4 +136,4 @@ const Welcome = () => {
     );
 };
 
-export default Welcome;
+export default UserList;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getUserById, updateUser } from "../services/user";
+import { getUserById, updateUser } from "../../services/user";
 
 const UserDetail = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const UserDetail = () => {
       });
       if (!res.ok) throw new Error("No se pudo eliminar el usuario");
       alert("Usuario eliminado");
-      navigate("/welcome");
+      navigate("/users");
     } catch (err) {
       alert(err.message);
     }
