@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getAllUsers } from "../../services/user";
-import useWebSocket from "../../hooks/useWebSocket";
-import Path from "../../config";
-import "../../styles/user/UserList.css";
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useWebSocketContext } from '../../hooks/WebSocketContext'; // Ajusta la ruta
+import { getUsers } from '../../services/user';
+import '../../styles/user/UserList.css'; // Tu archivo CSS existente
 
 // Constante para definir la cantidad de usuarios a mostrar por página
 const USERS_PER_PAGE = 10;
 
 /**
- * Componente que muestra una lista paginada y filtrable de usuarios.
- * Permite buscar, navegar a detalles, crear usuario nuevo y cerrar sesión.
+ * Componente UserList con funcionalidad WebSocket integrada de forma invisible.
+ * Mantiene tu diseño original pero agrega actualización automática.
  */
 const UserList = () => {
     const navigate = useNavigate();
+
+    // WebSocket context para eventos en tiempo real (sin modificar UI)
+    const { unprocessedEvents, markEventAsProcessed } = useWebSocketContext();
 
     // Estado para almacenar la lista completa de usuarios
     const [users, setUsers] = useState([]);
@@ -24,52 +25,57 @@ const UserList = () => {
 
     // Estado para la página actual en la paginación
     const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Hook personalizado para manejar mensajes en tiempo real vía WebSocket
-    const { lastMessage } = useWebSocket(Path.WS_BASE_URL);
-
-    // Efecto que escucha mensajes WebSocket para usuarios nuevos creados
+    // Cargar usuarios inicialmente
     useEffect(() => {
-        if (lastMessage && lastMessage.event === 'user_created') {
-            // Añade el nuevo usuario al listado actual
-            setUsers(prev => [...(prev || []), lastMessage.user]);
-            // Notifica con toast el nuevo usuario creado
-            toast.success(`New user ${lastMessage.user.username} created!`);
-        }
-    }, [lastMessage]);
-
-    /**
-     * Función para cerrar sesión:
-     * Elimina el token y recarga la página para volver al login.
-     */
-    const handleLogout = () => {
-        try {
-            localStorage.removeItem("token");
-            window.location.reload();
-        } catch (error) {
-            alert(error.message);
-        }
-    };
-
-    /**
-     * Función para obtener todos los usuarios desde el backend.
-     * Actualiza el estado con los datos recibidos.
-     */
-    const fetchUsers = async () => {
-        try {
-            const data = await getAllUsers();
-            setUsers(data || []);
-        } catch (error) {
-            console.error("Error:", error);
-            setUsers([]);
-            alert("No se pudieron cargar los usuarios.");
-        }
-    };
-
-    // Efecto que carga la lista de usuarios al montar el componente
-    useEffect(() => {
-        fetchUsers();
+        loadUsers();
     }, []);
+
+    // Escuchar eventos WebSocket de manera silenciosa
+    useEffect(() => {
+        const newUserEvents = unprocessedEvents.filter(event =>
+            event.event === 'user_created'
+        );
+
+        if (newUserEvents.length > 0) {
+            // Procesar cada evento de usuario creado
+            newUserEvents.forEach(event => {
+                if (event.user) {
+                    setUsers(prevUsers => {
+                        // Verificar si el usuario ya existe para evitar duplicados
+                        const existingUser = prevUsers.find(user => user.id === event.user.id);
+                        if (!existingUser) {
+                            // Agregar nuevo usuario al inicio de la lista
+                            return [event.user, ...prevUsers];
+                        }
+                        return prevUsers;
+                    });
+
+                    // Marcar evento como procesado
+                    markEventAsProcessed(event.id);
+                }
+            });
+        }
+    }, [unprocessedEvents, markEventAsProcessed]);
+
+    /**
+     * Función para cargar usuarios - mantener tu implementación original
+     */
+    const loadUsers = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const usersData = await getUsers();
+            setUsers(usersData);
+        } catch (err) {
+            setError('Error al cargar usuarios: ' + err.message);
+            console.error('Error loading users:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Convierte la búsqueda a minúsculas para comparación insensible a mayúsculas
     const s = search.toLowerCase();
@@ -94,6 +100,37 @@ const UserList = () => {
         (page - 1) * USERS_PER_PAGE,
         page * USERS_PER_PAGE
     );
+
+     const handleLogout = () => {
+        try {
+            localStorage.removeItem("token");
+            window.location.reload();
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    // Aquí mantienes tu JSX original exactamente como lo tienes
+    // Solo cambio los datos de muestra por tu implementación real
+
+    if (loading) {
+        return (
+            <div className="userlist-container">
+                <div className="loading">Cargando usuarios...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="userlist-container">
+                <div className="error">
+                    {error}
+                    <button onClick={loadUsers}>Reintentar</button>
+                </div>
+            </div>
+        );
+    }
 
     /**
      * Navega a la vista de detalle de usuario al hacer clic en una fila.

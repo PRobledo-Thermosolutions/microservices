@@ -1,27 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUser } from "../../services/user";
+import { useWebSocketContext } from "../../hooks/WebSocketContext"; // Ajusta la ruta
 import "../../styles/user/CreateUser.css";
 
 /**
- * Componente para crear un nuevo usuario.
- * Contiene un formulario controlado para ingresar email, username y contraseña.
- * Al enviarlo, llama al servicio para crear el usuario y navega a la lista.
+ * Componente CreateUser con funcionalidad WebSocket integrada de forma invisible.
+ * Mantiene el diseño original pero agrega capacidades de tiempo real.
  */
 const CreateUser = () => {
     const navigate = useNavigate();
 
-    // Estado para manejar los datos del formulario
+    // WebSocket context para eventos en tiempo real (sin modificar UI)
+    const { unprocessedEvents, markEventAsProcessed } = useWebSocketContext();
+
+    // Estado original sin modificaciones
     const [formData, setFormData] = useState({
         email: "",
         username: "",
         password: "",
-        is_active: true, // activo por defecto (aunque no se edita en formulario)
+        is_active: true,
     });
 
+    // Estado para rastrear si estamos esperando confirmación WebSocket
+    const [awaitingWebSocketConfirmation, setAwaitingWebSocketConfirmation] = useState(false);
+
     /**
-     * Actualiza el estado del formulario cuando cambian los inputs.
-     * Soporta inputs tipo texto, email y checkbox (aunque no hay checkbox aquí).
+     * Escucha eventos WebSocket de manera silenciosa
+     */
+    useEffect(() => {
+        if (awaitingWebSocketConfirmation) {
+            // Buscar evento de usuario creado que coincida con nuestros datos
+            const matchingEvent = unprocessedEvents.find(event =>
+                event.event === 'user_created' &&
+                event.user?.username === formData.username
+            );
+
+            if (matchingEvent) {
+                // Marcar evento como procesado
+                markEventAsProcessed(matchingEvent.id);
+                setAwaitingWebSocketConfirmation(false);
+
+                // Mostrar mensaje de éxito original y navegar
+                alert("Usuario creado exitosamente");
+                navigate("/users");
+            }
+        }
+    }, [unprocessedEvents, formData.username, awaitingWebSocketConfirmation, markEventAsProcessed, navigate]);
+
+    /**
+     * Maneja cambios en el formulario - sin modificaciones
      */
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -32,22 +60,33 @@ const CreateUser = () => {
     };
 
     /**
-     * Maneja el envío del formulario.
-     * Previene el envío por defecto, intenta crear el usuario con los datos.
-     * Si es exitoso, muestra alerta y navega a la lista.
-     * Si falla, muestra alerta con el error.
+     * Maneja el envío del formulario con funcionalidad WebSocket opcional
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
             await createUser(formData);
-            alert("Usuario creado exitosamente");
-            navigate("/users");
+
+            // Intentar esperar confirmación WebSocket por 3 segundos
+            setAwaitingWebSocketConfirmation(true);
+
+            // Fallback: si no llega confirmación WebSocket en 3 segundos, proceder normalmente
+            setTimeout(() => {
+                if (awaitingWebSocketConfirmation) {
+                    setAwaitingWebSocketConfirmation(false);
+                    alert("Usuario creado exitosamente");
+                    navigate("/users");
+                }
+            }, 3000);
+
         } catch (error) {
+            setAwaitingWebSocketConfirmation(false);
             alert("Error: " + error.message);
         }
     };
 
+    // Render original sin modificaciones visuales
     return (
         <div className="createuser-container">
             <form onSubmit={handleSubmit} className="createuser-form">
