@@ -48,13 +48,13 @@ REACT_APP_WS_PATH_TO_API=ws://localhost:8000/ws
 Ajusta las URLs según tu backend.
 
 ---
-#### Instalar dependencias
+#### Instalar dependencias dentro de /frontend
 En el directorio del proyecto frontend, ejecuta:
 ```
 npm install
 ```
 
-#### Scripts disponibles
+#### Scripts disponibles dentro de /frontend
 
 En el directorio del proyecto frontend, ejecuta:
 
@@ -111,12 +111,12 @@ Esta API proporciona endpoints para la gestión completa de usuarios, incluyendo
 http://localhost:8000
 ```
 
-### Instalar dependencias
+### Instalar dependencias dentro de /backend
 ```
 pip install fastapi uvicorn
 ```
 
-### Dentro del proyecto backend, iniciar la API
+### Iniciar la API dentro de /backend
 ```
 python -m uvicorn main:app --reload
 ```
