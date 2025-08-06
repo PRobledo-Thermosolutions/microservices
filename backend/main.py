@@ -1,5 +1,6 @@
 # Clase principal de FastAPI para crear la aplicación
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 # Motor de base de datos SQLAlchemy configurado en database.py
 from database import engine
 # Modelos del módulo de usuarios para crear las tablas en la base de datos
@@ -28,3 +29,15 @@ app.include_router(websocket_router)
 
 # Asigna explícitamente la dependencia de la base de datos (no es necesario si no se usa aquí)
 db_dependency = db_dependency
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
