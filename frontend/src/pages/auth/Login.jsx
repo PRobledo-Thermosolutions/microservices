@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth";
 import "../../styles/Login.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = await login(username, password);
       localStorage.setItem("token", token);
-      navigate("/users");
+      window.location.reload();
     } catch (err) {
       alert("Credenciales inválidas");
     }
