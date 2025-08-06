@@ -1,5 +1,6 @@
 export const login = async (username, password) => {
-  const response = await fetch("http://localhost:8000/login", {
+  try {
+    const response = await fetch("http://localhost:8000/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -16,4 +17,9 @@ export const login = async (username, password) => {
 
   const data = await response.json();
   return data.access_token;
+  
+  } catch (error) {
+    console.error("Error during login:", error);
+    throw error;
+  }
 };

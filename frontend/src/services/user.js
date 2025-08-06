@@ -1,7 +1,9 @@
+import API_BASE_URL from "../config";
+
 export const getAllUsers = async () => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:8000/users", {
+    const response = await fetch(`${API_BASE_URL}/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -20,7 +22,7 @@ export const getAllUsers = async () => {
 export const getUserById = async (userId) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:8000/users/${userId}`, {
+    const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error("No se pudo obtener el usuario");
@@ -34,7 +36,7 @@ export const getUserById = async (userId) => {
 export const createUser = async (formData) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:8000/users", {
+    const response = await fetch(`${API_BASE_URL}/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +44,7 @@ export const createUser = async (formData) => {
       },
       body: JSON.stringify(formData),
     });
-    if (!response.ok) throw new Error("No se pudo obtener el usuario");
+    if (!response.ok) throw new Error("No se pudo crear el usuario");
     const data = await response.json();
     return data;
   } catch (error) {
@@ -53,7 +55,7 @@ export const createUser = async (formData) => {
 export const updateUser = async (id, form) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:8000/users/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -63,6 +65,22 @@ export const updateUser = async (id, form) => {
     });
     if (!res.ok) throw new Error("No se pudo actualizar el usuario");
     alert("Usuario actualizado correctamente");
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) throw new Error("No se pudo eliminar el usuario");
+    alert("Usuario eliminado correctamente");
   } catch (err) {
     alert(err.message);
   }

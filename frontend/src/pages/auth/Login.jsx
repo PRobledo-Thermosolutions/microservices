@@ -19,32 +19,39 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-[#0b2a33]">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-80"
+        className="bg-white p-8 rounded-lg shadow-md w-96"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar sesión</h2>
+        <h2 className="text-3xl font-bold mb-6 text-gray-900">Log in</h2>
+
         <input
           type="text"
-          placeholder="Nombre de usuario"
-          className="w-full mb-4 px-3 py-2 border rounded"
+          placeholder="Username"
+          className="w-full mb-4 px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
+
         <input
           type="password"
-          placeholder="Contraseña"
-          className="w-full mb-4 px-3 py-2 border rounded"
+          placeholder="Password"
+          className="w-full mb-6 px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          className="w-full bg-cyan-600 text-white py-3 rounded hover:bg-cyan-700 transition-colors duration-200 font-medium text-lg"
         >
-          Ingresar
+          Log in
         </button>
+
+        <p className="text-center mt-4 text-gray-600 font-semibold">
+          or, <span className="underline cursor-pointer hover:text-cyan-700">sign up</span>
+        </p>
       </form>
     </div>
   );

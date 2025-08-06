@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getUserById, updateUser } from "../../services/user";
+import { getUserById, updateUser, deleteUser } from "../../services/user";
 
 const UserDetail = () => {
   const navigate = useNavigate();
@@ -42,15 +42,7 @@ const UserDetail = () => {
   const handleDelete = async () => {
     if (!window.confirm("¿Estás seguro de eliminar este usuario?")) return;
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8000/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("No se pudo eliminar el usuario");
-      alert("Usuario eliminado");
+      await deleteUser(id);
       navigate("/users");
     } catch (err) {
       alert(err.message);
