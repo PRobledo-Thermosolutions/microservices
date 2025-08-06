@@ -78,7 +78,6 @@ const UserList = () => {
                             <th className="px-4 py-2 border">ID</th>
                             <th className="px-4 py-2 border">Email</th>
                             <th className="px-4 py-2 border">Username</th>
-                            <th className="px-4 py-2 border">Activo</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,9 +97,6 @@ const UserList = () => {
                                     <td className="border px-4 py-2 text-center">{user.id}</td>
                                     <td className="border px-4 py-2">{user.email}</td>
                                     <td className="border px-4 py-2">{user.username}</td>
-                                    <td className="border px-4 py-2 text-center">
-                                        {user.is_active ? "Activo" : "Inactivo"}
-                                    </td>
                                 </tr>
                             ))
                         )}

@@ -92,16 +92,6 @@ const UserDetail = () => {
             className="w-full mt-1 p-2 border rounded"
           />
         </label>
-        <label className="block mb-4">
-          <input
-            name="is_active"
-            type="checkbox"
-            checked={form.is_active}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          Usuario activo
-        </label>
 
         <div className="flex justify-between">
           <button

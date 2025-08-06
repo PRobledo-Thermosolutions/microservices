@@ -71,17 +71,6 @@ const CreateUser = () => {
                     required
                 />
 
-                <label className="flex items-center mb-4">
-                    <input
-                        type="checkbox"
-                        name="is_active"
-                        checked={formData.is_active}
-                        onChange={handleChange}
-                        className="mr-2"
-                    />
-                    Usuario activo
-                </label>
-
                 <button
                     type="submit"
                     className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
