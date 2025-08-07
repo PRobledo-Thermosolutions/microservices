@@ -121,6 +121,19 @@ pip install fastapi uvicorn
 python -m uvicorn main:app --reload
 ```
 
+### Ingresar credenciales para autenticación de base de datos
+```
+DB_HOST=your_host_name
+DB_PORT=your_port_number
+DB_NAME=your_database_name
+DB_USER=your_user_name
+DB_PASSWORD=your_password
+
+SECRET_KEY=your_secret_key
+ALGORITHM=H256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+```
+
 ### Modelos de Datos
 
 #### UserModel
