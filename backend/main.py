@@ -8,7 +8,6 @@ import users.models as UserModel
 # Routers definidos para usuarios, autenticación y websockets
 from users.routers import users_router
 from auth.routers import auth_router
-from ws.routers import websocket_router
 # Dependencia para obtener la sesión de base de datos
 from dependencies import db_dependency
 
@@ -25,7 +24,6 @@ app.version = "0.0.1"
 # CONFIGURACIÓN CORS MEJORADA - Incluye configuración específica para WebSockets
 origins = [
     "http://localhost:3000",
-    "ws://localhost:3000",  # Agregar protocolo WebSocket
 ]
 
 app.add_middleware(
@@ -39,12 +37,14 @@ app.add_middleware(
 # Registra el router del módulo de usuarios y de autenticación con la aplicación principal
 app.include_router(users_router)
 app.include_router(auth_router)
-app.include_router(websocket_router)
 
 # Asigna explícitamente la dependencia de la base de datos (no es necesario si no se usa aquí)
 db_dependency = db_dependency
 
-# Endpoint de salud para verificar que la API esté funcionando
+@app.get("/")
+async def root():
+    return {"message": "API funcionando con WebSocket externo en Go"}
+
 @app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+async def health():
+    return {"status": "healthy", "service": "fastapi-api"}

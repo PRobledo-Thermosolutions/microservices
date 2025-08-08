@@ -24,7 +24,7 @@ export const WebSocketProvider = ({ children }) => {
     error, 
     reconnect,
     connectionState 
-  } = useWebSocket('ws://localhost:8000/ws/users', {
+  } = useWebSocket('ws://localhost:8080/ws/users', {
     debug: true,
     reconnectInterval: 3000,
     maxReconnectAttempts: 5
@@ -77,15 +77,20 @@ export const WebSocketProvider = ({ children }) => {
             id: Date.now(),
             type: 'error',
             title: 'Error del Servidor',
-            message: lastMessage.message || 'Error desconocido',
+            message: lastMessage.data || 'Error desconocido',
             timestamp: new Date().toISOString(),
             autoHide: false
           }]);
           break;
           
+        case 'message_received':
+          // Confirmación de mensaje recibido
+          console.log('Server confirmed message receipt:', lastMessage.data);
+          break;
+          
         default:
           // Otros eventos
-          console.log('Unhandled WebSocket event:', lastMessage.event);
+          console.log('Unhandled WebSocket event:', lastMessage.event, lastMessage);
       }
     }
   }, [lastMessage]);
@@ -144,6 +149,18 @@ export const WebSocketProvider = ({ children }) => {
     }
   };
 
+  // Función para enviar mensaje de prueba
+  const sendTestMessage = () => {
+    const testMessage = {
+      event: 'test',
+      data: { 
+        message: 'Test message from React client',
+        timestamp: new Date().toISOString()
+      }
+    };
+    return sendMessage(testMessage);
+  };
+
   // Valor del contexto que se proporciona a los componentes hijos
   const contextValue = {
     // Estado de la conexión
@@ -153,6 +170,7 @@ export const WebSocketProvider = ({ children }) => {
     
     // Funciones de WebSocket
     sendMessage,
+    sendTestMessage,
     reconnect,
     
     // Notificaciones
@@ -167,7 +185,8 @@ export const WebSocketProvider = ({ children }) => {
     
     // Utilidades
     isConnected: readyState === connectionState.OPEN,
-    connectionState
+    connectionState,
+    serverUrl: 'ws://localhost:8080/ws/users'
   };
 
   return (

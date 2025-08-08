@@ -11,8 +11,10 @@ from users.schemas import UserSchema
 from users.services import encrypt_password, verify_new_info
 # Dependencia de la base de datos
 from dependencies import db_dependency
-# Manager
-from ws.manager import manager
+from ws.websocket_notifier import notifier  # Importar el notificador
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Crea el router del módulo de usuarios
 users_router = APIRouter()
@@ -44,15 +46,20 @@ async def create_user(
     db.add(db_user)
     db.commit()
 
-    # Envía notificación a todos los clientes conectados vía WebSocket
-    await manager.broadcast(json.dumps({
-        "event": "user_created",
-        "user": {
-            "id": db_user.id,
-            "email": db_user.email,
-            "username": db_user.username,
-        }
-    }))
+    # Preparar datos del usuario para notificación (sin contraseña)
+    user_data = {
+        "id": db_user.id,
+        "email": db_user.email,
+        "username": db_user.username,
+        "is_active": db_user.is_active
+    }
+
+    # Intentar notificar al servidor WebSocket Go
+    notification_sent = await notifier.notify_user_created(user_data)
+    
+    if not notification_sent:
+        # Log el error pero no falla la creación del usuario
+        logger.warning("No se pudo enviar notificación WebSocket, pero el usuario fue creado")
 
     return {"message": "Usuario creado exitosamente"}
 
