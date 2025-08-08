@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mi Página de Ejemplo</title>
+  </head>
+  <body>
+    <h1>¡Hola Mundo!</h1>
+    <p>Este es un ejemplo básico de un archivo index.html.</p>
+    <h1 id="connected">0</h1>
+    <script>
+      const socket = new WebSocket("ws://localhost:8080/ws");
+      socket.onmessage = function(event) {
+        document.getElementById("connected").textContent = event.data;
+      }
+    </script>
+  </body>
+</html>
