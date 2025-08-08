@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
@@ -20,7 +23,7 @@ type Message struct {
 	User  *User       `json:"user,omitempty"`
 }
 
-// Estructura del usuario (debe coincidir con tu API)
+// Estructura del usuario
 type User struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email"`
@@ -49,7 +52,7 @@ type Hub struct {
 // Upgrader para WebSocket con configuración CORS
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return true // Permitir todas las conexiones (ajustar según necesidades)
+		return true
 	},
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -291,9 +294,18 @@ func main() {
 	router.HandleFunc("/api/stats", hub.statsHandler).Methods("GET")
 	router.HandleFunc("/health", healthHandler).Methods("GET")
 
+	// Cargar archivo .env
+	errEnv := godotenv.Load()
+
+	if errEnv != nil {
+		log.Fatalf("Error al cargar el archivo .env")
+	}
+
+	allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
+
 	// Configurar CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:8000"}, // Ajustar según tus dominios
+		AllowedOrigins:   allowedOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
@@ -301,19 +313,25 @@ func main() {
 
 	handler := c.Handler(router)
 
+	port := os.Getenv("GO_PORT")
+
 	// Configurar servidor
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         port,
 		Handler:      handler,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}
 
-	log.Println("🚀 Servidor WebSocket iniciado en puerto 8080")
-	log.Println("📡 WebSocket disponible en: ws://localhost:8080/ws/users")
-	log.Println("🔄 API para notificaciones: http://localhost:8080/api/notify/user-created")
-	log.Println("📊 Estadísticas: http://localhost:8080/api/stats")
-	log.Println("💚 Health check: http://localhost:8080/health")
+	webSocketPath := os.Getenv("GO_WEBSOCKET_PATH")
+
+	apiPath := os.Getenv("GO_API_PATH")
+
+	log.Println("🚀 Servidor WebSocket iniciado en puerto", port)
+	log.Println("📡 WebSocket disponible en:", webSocketPath)
+	log.Println("🔄 API para notificaciones: " + apiPath + "/api/notify/user-created")
+	log.Println("📊 Estadísticas: " + apiPath + "/api/stats")
+	log.Println("💚 Health check: " + apiPath + "/health")
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal("Error iniciando servidor:", err)
