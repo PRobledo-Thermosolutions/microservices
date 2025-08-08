@@ -16,3 +16,5 @@ class User(Base):
     username = Column(String(50), unique=True)
     # Columna password: hasta 255 caracteres
     password = Column(String(255))
+    # Columna de activación de usuario: True o False
+    is_active = Column(Boolean, default=True)

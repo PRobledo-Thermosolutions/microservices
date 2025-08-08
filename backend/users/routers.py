@@ -24,7 +24,6 @@ users_router = APIRouter()
 async def create_user(
     user: UserSchema, 
     db: db_dependency, 
-    current_user: str = Depends(get_current_user)
 ):
     """
     Crea un nuevo usuario en la base de datos y lo encripta.\n
