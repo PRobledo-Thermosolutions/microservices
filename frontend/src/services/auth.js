@@ -12,7 +12,7 @@ import Path from "../config";
 export const login = async (username, password) => {
   try {
     // Se realiza una solicitud POST al endpoint /login del backend
-    const response = await fetch(`${Path.API_BASE_URL}/login`, {
+    const response = await fetch(`${Path.AUTH_API_BASE_URL}/login`, {
       method: "POST",
       headers: {
         // Se indica que los datos se enviarán como formulario (x-www-form-urlencoded)

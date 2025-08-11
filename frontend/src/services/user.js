@@ -58,7 +58,7 @@ const handleResponse = async (response) => {
 export const createUser = async (formData) => {
   try {
     
-    const response = await fetch(`${Path.API_BASE_URL}/users`, {
+    const response = await fetch(`${Path.USER_API_BASE_URL}/users`, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(formData),
@@ -83,7 +83,7 @@ export const createUser = async (formData) => {
 export const getUsers = async () => {
   try {
     
-    const response = await fetch(`${Path.API_BASE_URL}/users`, {
+    const response = await fetch(`${Path.USER_API_BASE_URL}/users`, {
       method: "GET",
       headers: getHeaders(),
     });
@@ -107,7 +107,7 @@ export const getUsers = async () => {
 export const getUserById = async (userId) => {
   try {
     
-    const response = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
+    const response = await fetch(`${Path.USER_API_BASE_URL}/users/${userId}`, {
       method: "GET",
       headers: getHeaders(),
     });
@@ -133,7 +133,7 @@ export const getUserById = async (userId) => {
 export const updateUser = async (userId, updateData) => {
   try {
     
-    const response = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
+    const response = await fetch(`${Path.USER_API_BASE_URL}/users/${userId}`, {
       method: "PUT",
       headers: getHeaders(),
       body: JSON.stringify(updateData),
@@ -159,7 +159,7 @@ export const updateUser = async (userId, updateData) => {
 export const deleteUser = async (userId) => {
   try {
     
-    const response = await fetch(`${Path.API_BASE_URL}/users/${userId}`, {
+    const response = await fetch(`${Path.USER_API_BASE_URL}/users/${userId}`, {
       method: "DELETE",
       headers: getHeaders(),
     });
@@ -189,7 +189,7 @@ export const deleteUser = async (userId) => {
  */
 export const checkApiHealth = async () => {
   try {
-    const response = await fetch(`${Path.API_BASE_URL}/health`, {
+    const response = await fetch(`${Path.USER_API_BASE_URL}/health`, {
       method: "GET",
     });
 
