@@ -34,7 +34,7 @@ def verify_new_info(user: UserSchema, updated_user: UserSchema):
         - Se excluyen campos no enviados (None) usando `exclude_unset=True`.
     """
     for field, value in updated_user.dict(exclude_unset=True).items():
-        if field == "password":
+        if field == "password" and not user.password == updated_user.password:
             user.password = encrypt_password(value)
         else:
             setattr(user, field, value)

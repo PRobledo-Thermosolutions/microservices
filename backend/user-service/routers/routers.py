@@ -160,6 +160,18 @@ async def update_user(
         except Exception as e:
             logger.error(f"No se pudo comunicar con Auth Service: {e}")
 
+    # 3️⃣ Enviar notificación WebSocket
+    user_data = {
+        "id": user.id,
+        "email": user.email,
+        "username": user.username,
+        "is_active": user.is_active
+    }
+
+    notification_sent = await notifier.notify_user_created(user_data)
+    if not notification_sent:
+        logger.warning("No se pudo enviar notificación WebSocket, pero el usuario fue creado")
+
     return user
 
 # Ruta: Eliminar un usuario por ID (protegida)
