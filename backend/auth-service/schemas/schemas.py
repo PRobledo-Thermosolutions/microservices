@@ -5,7 +5,7 @@ from pydantic import BaseModel
 # Este esquema se usa para validar datos entrantes (por ejemplo, en requests)
 class LoginSchema(BaseModel):
     # Campo email: cadena de texto
-    email: str
+    username: str
     # Campo password: cadena de texto
     password: str
     

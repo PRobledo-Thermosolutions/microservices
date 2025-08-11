@@ -1,7 +1,10 @@
 # Esquema de usuario (usado como tipo de entrada)
-from users.schemas import UserSchema
+import os
+from schemas.schemas import UserSchema
 # Librería bcrypt para el hash seguro de contraseñas
 import bcrypt
+
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
 
 # Función para encriptar contraseñas antes de almacenarlas
 def encrypt_password(plain_password: str) -> str:

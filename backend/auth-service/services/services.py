@@ -1,6 +1,7 @@
 # Herramientas para manejo de fechas y expiración de tokens
 from datetime import datetime, timedelta
 # Herramientas de FastAPI para manejo de errores y dependencias
+import bcrypt
 from fastapi import Depends, HTTPException, status
 # Esquema OAuth2 para autenticación vía token bearer
 from fastapi.security import OAuth2PasswordBearer
@@ -79,4 +80,3 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         # Si falla la decodificación o está alterado, lanza excepción
         raise credentials_exception
-

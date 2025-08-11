@@ -1,18 +1,19 @@
 # Herramientas de FastAPI para rutas, dependencias e interceptar errores
-import json
+import os
 from fastapi import APIRouter, Depends, HTTPException, status
-# Función que valida el token JWT y obtiene al usuario actual
-from auth.services import get_current_user
+import httpx
 # Modelo de usuario definido con SQLAlchemy
-import users.models as UserModel
+import models.models as UserModel
 # Esquema de datos del usuario para validación
-from users.schemas import UserSchema
-# Funciones para encriptar contraseñas y actualizar datos
-from users.services import encrypt_password, verify_new_info
+from schemas.schemas import UserSchema
+# Funciones para encriptar contraseñas, actualizar datos y valida el token JWT y obtiene al usuario actual
+from services.services import encrypt_password, verify_new_info
 # Dependencia de la base de datos
-from dependencies import db_dependency
+from dependencies.dependencies import db_dependency
 from ws.websocket_notifier import notifier  # Importar el notificador
 import logging
+
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +37,30 @@ async def create_user(
     Raises:\n
         HTTPException: Si el usuario ya existe.\n
     """
-    # Encripta la contraseña antes de guardarla
+    # 1️⃣ Crear usuario en la DB de User Service
     hashed_password = encrypt_password(user.password)
     user.password = hashed_password
 
-    # Crea el usuario como objeto SQLAlchemy y lo guarda en la base de datos
     db_user = UserModel.User(**user.dict())
     db.add(db_user)
     db.commit()
 
-    # Preparar datos del usuario para notificación (sin contraseña)
+    # 2️⃣ Notificar al Auth Service para crear el login
+    async with httpx.AsyncClient() as client:
+        try:
+            auth_payload = {
+                "username": user.username,
+                "password": user.password,
+                "is_active": True
+            }
+            auth_response = await client.post(f"{AUTH_SERVICE_URL}/create_login", json=auth_payload)
+
+            if auth_response.status_code != 201:
+                logger.warning(f"Auth service respondió con error: {auth_response.status_code} - {auth_response.text}")
+        except Exception as e:
+            logger.error(f"No se pudo comunicar con Auth Service: {e}")
+
+    # 3️⃣ Enviar notificación WebSocket
     user_data = {
         "id": db_user.id,
         "email": db_user.email,
@@ -53,11 +68,8 @@ async def create_user(
         "is_active": db_user.is_active
     }
 
-    # Intentar notificar al servidor WebSocket Go
     notification_sent = await notifier.notify_user_created(user_data)
-    
     if not notification_sent:
-        # Log el error pero no falla la creación del usuario
         logger.warning("No se pudo enviar notificación WebSocket, pero el usuario fue creado")
 
     return {"message": "Usuario creado exitosamente"}
@@ -67,7 +79,6 @@ async def create_user(
 async def read_user_by_id(
     user_id: int, 
     db: db_dependency, 
-    current_user: str = Depends(get_current_user)
 ):
     """
     Obtiene un usuario por ID.\n
@@ -92,7 +103,6 @@ async def read_user_by_id(
 @users_router.get("/users", status_code=status.HTTP_200_OK, tags=["Users"])
 async def read_users(
     db: db_dependency, 
-    current_user: str = Depends(get_current_user)
 ):
     """
     Obtiene todos los usuarios.\n
@@ -108,11 +118,10 @@ async def read_users(
 
 # Ruta: Actualizar un usuario por ID (protegida)
 @users_router.put("/users/{user_id}", status_code=status.HTTP_200_OK, tags=["Users"])
-def update_user(
+async def update_user(
     user_id: int, 
     updated_user: UserSchema, 
     db: db_dependency, 
-    current_user: str = Depends(get_current_user)
 ):
     """
     Actualiza un usuario por ID.\n
@@ -136,6 +145,21 @@ def update_user(
 
     db.commit()
     db.refresh(user)
+    # 2️⃣ Notificar al Auth Service para crear el login
+    async with httpx.AsyncClient() as client:
+        try:
+            auth_payload = {
+                "username": user.username,
+                "password": user.password,
+                "is_active": True
+            }
+            auth_response = await client.put(f"{AUTH_SERVICE_URL}/update_login/{user.id}", json=auth_payload)
+
+            if auth_response.status_code != 200:
+                logger.warning(f"Auth service respondió con error: {auth_response.status_code} - {auth_response.text}")
+        except Exception as e:
+            logger.error(f"No se pudo comunicar con Auth Service: {e}")
+
     return user
 
 # Ruta: Eliminar un usuario por ID (protegida)
@@ -143,7 +167,6 @@ def update_user(
 def delete_user(
     user_id: int, 
     db: db_dependency, 
-    current_user: str = Depends(get_current_user)
 ):
     """
     Elimina un usuario por ID.\n

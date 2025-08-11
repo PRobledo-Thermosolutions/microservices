@@ -1,7 +1,7 @@
 # Generator para declarar el tipo de valor que retorna una función generadora
 from typing import Generator
 # Fábrica de sesiones desde la configuración de base de datos
-from database import SessionLocal
+from database.database import SessionLocal
 # Clase Session de SQLAlchemy para tipar correctamente
 from sqlalchemy.orm import Session
 # Depends para la inyección de dependencias en FastAPI

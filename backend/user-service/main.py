@@ -2,14 +2,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # Motor de base de datos SQLAlchemy configurado en database.py
-from database import engine
+from database.database import engine
 # Modelos del módulo de usuarios para crear las tablas en la base de datos
-import users.models as UserModel
+import models.models as UserModel
 # Routers definidos para usuarios, autenticación y websockets
-from users.routers import users_router
-from auth.routers import auth_router
+from routers.routers import users_router
 # Dependencia para obtener la sesión de base de datos
-from dependencies import db_dependency
+from dependencies.dependencies import db_dependency
 
 # Crea la instancia principal de la aplicación FastAPI
 app = FastAPI()
@@ -18,7 +17,7 @@ app = FastAPI()
 UserModel.Base.metadata.create_all(bind=engine)
 
 # Define el título y la versión de la API (esto se muestra en la documentación Swagger)
-app.title = "Microservices API FastAPI"
+app.title = "User Service FastAPI"
 app.version = "0.0.1"
 
 # CONFIGURACIÓN CORS MEJORADA - Incluye configuración específica para WebSockets
@@ -36,15 +35,14 @@ app.add_middleware(
 
 # Registra el router del módulo de usuarios y de autenticación con la aplicación principal
 app.include_router(users_router)
-app.include_router(auth_router)
 
 # Asigna explícitamente la dependencia de la base de datos (no es necesario si no se usa aquí)
 db_dependency = db_dependency
 
-@app.get("/")
+@app.get("/", tags=["Health"])
 async def root():
     return {"message": "API funcionando con WebSocket externo en Go"}
 
-@app.get("/health")
+@app.get("/health", tags=["Health"])
 async def health():
     return {"status": "healthy", "service": "fastapi-api"}
